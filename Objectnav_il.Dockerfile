@@ -1,14 +1,14 @@
 FROM fairembodied/habitat-challenge:testing_2021_habitat_base_docker
 
-RUN /bin/bash -c ". activate habitat; conda install pytorch torchvision"
+RUN /bin/bash -c ". activate habitat; conda install pytorch==1.7.1 torchvision torchaudio cudatoolkit=10.2 -c pytorch; conda install tensorboard; pip install ifcfg"
 
-ADD il_agent.py il_agent.py
+ADD il_agent.py agent.py
 ADD submission.sh submission.sh
 ADD configs/challenge_objectnav2021.local.rgbd.yaml /challenge_objectnav2021.local.rgbd.yaml
 ENV AGENT_EVALUATION_TYPE remote
 
 # Add checkpoints and custom configs
-# ADD ckpts/model_10.ckpt ckpt/model.ckpt
+ADD ckpts/model_9.ckpt ckpt/model.ckpt
 
 ADD configs/il_objectnav.yaml configs/il_objectnav.yaml
 

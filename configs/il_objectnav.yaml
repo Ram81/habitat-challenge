@@ -1,7 +1,7 @@
 # Note:  This is an example config, see habitat_baselines/config/pointnav/ppo_pointnav.yaml
 # for better hyperparameters for actual training
 
-BASE_TASK_CONFIG_PATH: "configs/tasks/objectnav_mp3d_il.yaml"
+BASE_TASK_CONFIG_PATH: "configs/challenge_objectnav2021.local.rgbd.yaml"
 TRAINER_NAME: "objectnav-behavior-cloning"
 ENV_NAME: NavRLEnv
 SIMULATOR_GPU_ID: 0
@@ -11,7 +11,7 @@ TENSORBOARD_DIR: "tb/objectnav/resnet18_challenge/seed_1/"
 VIDEO_DIR: "video_dir/objectnav/resnet18_challenge/seed_1/eval"
 # To evaluate on all episodes, set this to -1
 TEST_EPISODE_COUNT: -1
-EVAL_CKPT_PATH_DIR: "data/new_checkpoints/objectnav/resnet18_challenge/seed_1/model_500.ckpt"
+EVAL_CKPT_PATH_DIR: "ckpt/model.ckpt"
 SHOW_TOP_DOWN_MAP: False
 NUM_PROCESSES: 1
 CHECKPOINT_FOLDER: "data/new_checkpoints/objectnav/resnet18_challenge/seed_1"
@@ -63,7 +63,7 @@ MODEL:
     output_size: 128
     backbone: "resnet50"
     trainable: False
-    ddppo_checkpoint: "data/ddppo-models/gibson-2plus-resnet50.pth"
+    ddppo_checkpoint: "NONE" #"data/ddppo-models/gibson-2plus-resnet50.pth"
   STATE_ENCODER:
     hidden_size: 512
     rnn_type: "GRU"

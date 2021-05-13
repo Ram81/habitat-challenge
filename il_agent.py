@@ -15,12 +15,12 @@ import torch
 from gym.spaces import Discrete, Dict, Box
 
 import habitat
-from habitat import Config
+from habitat import Config, logger
 from habitat.core.agent import Agent
-from habitat_baselines.common.utils import batch_obs
 
-from src.default import get_config
 from src import POLICY_CLASSES
+from src.default import get_config
+from src.models.common import batch_obs
 
 
 class ILAgent(Agent):
@@ -30,6 +30,11 @@ class ILAgent(Agent):
                 "Model checkpoint wasn't provided, quitting."
             )
         self.device = torch.device("cuda:{}".format(config.TORCH_GPU_ID))
+        # print("torch: {}".format(torch.__version__))
+        # print(config.MODEL_PATH)
+        # print(os.listdir("habitat-challenge-data"))
+        # print(os.listdir("habitat-challenge-data/data/"))
+        # print(os.listdir("habitat-challenge-data/data/scene_datasets/"))
         ckpt_dict = torch.load(config.MODEL_PATH, map_location=self.device)
 
         # Config
@@ -63,7 +68,7 @@ class ILAgent(Agent):
             "gps": Box(
                 low=np.finfo(np.float32).min,
                 high=np.finfo(np.float32).max,
-                shape=(3,), # Spoof for model to be shaped correctly
+                shape=(2,), # Spoof for model to be shaped correctly
                 dtype=np.float32,
             ),
             "compass": Box(low=-np.pi, high=np.pi, shape=(1,), dtype=np.float)
@@ -108,7 +113,7 @@ class ILAgent(Agent):
         )
 
         # self.step = 0
-        # self.ep = 0
+        self.ep = 0
         # self._POSSIBLE_ACTIONS = task_cfg.POSSIBLE_ACTIONS
         # self.actions = []
 
@@ -125,7 +130,8 @@ class ILAgent(Agent):
         )
 
         # self.step = 0
-        # self.ep += 1
+        self.ep += 1
+        logger.info("Episode done: {}".format(self.ep))
         # self.actions = []
 
     @torch.no_grad()
@@ -136,12 +142,12 @@ class ILAgent(Agent):
 
         with torch.no_grad():
             # Substitute 3D GPS (2D provided noted in `nav.py`)
-            if batch['gps'].size(-1) == 2:
-                batch["gps"] = torch.stack([
-                    batch["gps"][:, 1],
-                    torch.zeros(batch["gps"].size(0), dtype=batch["gps"].dtype, device=self.device),
-                    -batch["gps"][:, 0],
-                ], axis=-1)
+            # if batch['gps'].size(-1) == 2:
+            #     batch["gps"] = torch.stack([
+            #         batch["gps"][:, 1],
+            #         torch.zeros(batch["gps"].size(0), dtype=batch["gps"].dtype, device=self.device),
+            #         -batch["gps"][:, 0],
+            #     ], axis=-1)
 
             logits, self.test_recurrent_hidden_states = self.model(
                 batch,
@@ -153,7 +159,7 @@ class ILAgent(Agent):
             self.prev_actions.copy_(actions)
 
         self.not_done_masks = torch.ones(1, 1, device=self.device, dtype=torch.bool) # Reset called externally, we're not done until then
-        return actions[0][0].item()
+        return actions[0].item()
 
 
 def main():
@@ -179,7 +185,6 @@ def main():
     torch.random.manual_seed(seed)
     config.RANDOM_SEED = 7
     config.freeze()
-    torch.set_deterministic(True)
     torch.backends.cudnn.benchmark = False
 
     agent = ILAgent(config)

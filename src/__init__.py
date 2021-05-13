@@ -4,7 +4,7 @@ from .policy import (
 )
 from .policy import (
     Seq2SeqModel
-]
+)
 
 POLICY_CLASSES = {
     'Seq2SeqPolicy': Seq2SeqModel,

@@ -8,6 +8,7 @@ import torchvision.models as models
 from gym import spaces
 from .common import Flatten
 from . import resnet
+from typing import Dict
 
 
 class ResNetEncoder(nn.Module):

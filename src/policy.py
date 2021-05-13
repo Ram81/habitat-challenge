@@ -1,3 +1,5 @@
+import abc
+
 import math
 import sys
 from typing import Dict, Iterable, Tuple
@@ -13,9 +15,11 @@ from .models.resnet_encoders import (
     ResnetRGBEncoder,
 )
 from .models.rnn_state_encoder import RNNStateEncoder
-from .resnet_policy import PointNavResNetNet
 from .models.running_mean_and_var import RunningMeanAndVar
 from .models.common import CategoricalNet, CustomFixedCategorical
+
+from habitat import Config
+
 
 class Policy(nn.Module):
 
